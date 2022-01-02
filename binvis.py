@@ -29,7 +29,7 @@ def save_file(file_path, out_dir):
 
         dst = path.join(out_dir, '.'.join([filename, 'png']))
 
-        with open(file_path, 'rb') as file:
+        with open(fr'{file_path}', 'rb') as file:
             content = file.read()
 
         convert_to_image(256, content, dst)
@@ -44,6 +44,8 @@ def save_directory(directory, out_dir):
 
         if '.DS_Store' in files_paths:
             files_paths.remove('.DS_Store')
+        if '.git' in files_paths:
+            files_paths.remove('.git')
 
         for file_path in files_paths:
             file_path = path.join(directory, file_path)
@@ -57,6 +59,8 @@ def save_directory_recursive(directory, out_dir):
 
     if '.DS_Store' in dir_content:
         dir_content.remove('.DS_Store')
+    if '.git' in dir_content:
+        dir_content.remove('.git')
 
     files_paths = [data_path for data_path in dir_content if '.' in data_path]
     dirs_paths = [data_path for data_path in dir_content if data_path not in files_paths]
