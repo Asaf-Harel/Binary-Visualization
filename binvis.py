@@ -1,47 +1,104 @@
-import os.path
-
-from PIL import Image, ImageDraw
-
-from scurve import progress
-from scurve.hilbert import Hilbert
-from scurve.color import ColorClass
+import sys
+import os
+from os import path
+from converter import convert_to_image
 
 
-def convert_to_image(size, csource, name, prog):
-    prog.set_target((size ** 2) * 4)
-    map = Hilbert.fromSize(2, size ** 2)
-    c = Image.new("RGB", (size, size * 4))
-    cd = ImageDraw.Draw(c)
-    step = len(csource) / float(len(map) * 4)
+class ArgumentError(Exception):
+    __module__ = Exception.__module__
 
-    sofar = 0
-    for quad in range(4):
-        for i, p in enumerate(map):
-            off = (i + (quad * size ** 2))
-            color = csource.point(
-                int(off * step)
-            )
-            x, y = tuple(p)
-            cd.point(
-                (x, y + (size * quad)),
-                fill=tuple(color)
-            )
-            if not sofar % 100:
-                prog.tick(sofar)
-            sofar += 1
-    c.save(name)
+    def __init__(self, message=''):
+        super().__init__(message)
 
 
-def main():
-    with open('NoEscape.exe', 'rb') as file:
-        d = file.read()
-    dst = 'test.png'
+class DirectoryNotFoundError(Exception):
+    __module__ = Exception.__module__
 
-    csource = ColorClass(d)
-    prog = progress.Progress(None)
-    convert_to_image(256, csource, dst, prog)
-
-    prog.clear()
+    def __init__(self, message=''):
+        super().__init__(message)
 
 
-main()
+def save_file(file_path, out_dir):
+    if path.isfile(file_path):
+        filename = file_path.split('/')[-1].split('.')[0]
+        dst = path.join(out_dir, '.'.join([filename, 'png']))
+
+        with open(file_path, 'rb') as file:
+            content = file.read()
+
+        convert_to_image(256, content, dst)
+
+    else:
+        raise FileNotFoundError(f'"{file_path}" does not exists')
+
+
+def save_directory(directory, out_dir):
+    if path.isdir(directory):
+        files_paths = os.listdir(directory)
+
+        if '.DS_Store' in files_paths:
+            files_paths.remove('.DS_Store')
+
+        for file_path in files_paths:
+            file_path = path.join(directory, file_path)
+            save_file(file_path, out_dir)
+    else:
+        raise DirectoryNotFoundError(f'"{directory}" does not exists')
+
+
+def save_directory_recursive(directory, out_dir):
+    dir_content = os.listdir(directory)
+
+    if '.DS_Store' in dir_content:
+        dir_content.remove('.DS_Store')
+
+    files_paths = [data_path for data_path in dir_content if '.' in data_path]
+    dirs_paths = [data_path for data_path in dir_content if data_path not in files_paths]
+
+    for file_path in files_paths:
+        file_path = path.join(directory, file_path)
+        save_file(file_path, out_dir)
+    for dir_path in dirs_paths:
+        out_dir = path.join(out_dir, dir_path)
+        os.mkdir(out_dir)
+        dir_path = path.join(directory, dir_path)
+        save_directory_recursive(dir_path, out_dir)
+
+
+def save():
+    args = sys.argv
+
+    if len(args) < 2:
+        raise ArgumentError('No file or directory specified')
+    if len(args) < 3:
+        raise ArgumentError('No Output directory specified')
+
+    args = args[1:]
+
+    out_dir = args[1]
+
+    if not path.isdir(out_dir):
+        os.mkdir(out_dir)
+
+    if len(args) > 2:
+        if '-r' in args:
+            args.remove('-r')
+
+            parent_directory = args[0]
+            save_directory_recursive(parent_directory, out_dir)
+        else:
+            raise ArgumentError(f'{args[2]} is not an acceptable argument')
+
+    elif '/' in args[0][-1]:
+        directory = args[0]
+
+        save_directory(directory, out_dir)
+
+    else:
+        file_path = args[0]
+
+        save_file(file_path, out_dir)
+
+
+if __name__ == '__main__':
+    save()
