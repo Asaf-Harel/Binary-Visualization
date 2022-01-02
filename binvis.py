@@ -29,7 +29,7 @@ def save_file(file_path, out_dir):
 
         dst = path.join(out_dir, '.'.join([filename, 'png']))
 
-        with open(fr'{file_path}', 'rb') as file:
+        with open(file_path, 'rb') as file:
             content = file.read()
 
         convert_to_image(256, content, dst)
