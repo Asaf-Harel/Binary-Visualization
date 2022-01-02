@@ -33,11 +33,3 @@ def convert_to_image(size, data, name):
     c.save(name)
 
     print('\n')
-
-
-def main():
-    with open('/Users/asafharel/Downloads/MalwareDatabase/NoEscape.exe', 'rb') as file:
-        d = file.read()
-    dst = 'test.png'
-
-    convert_to_image(256, d, dst)

@@ -20,6 +20,7 @@ class DirectoryNotFoundError(Exception):
 
 def save_file(file_path, out_dir):
     if path.isfile(file_path):
+        file_path = file_path.replace('\\', '/')
         filename = file_path.split('/')[-1].split('.')[0]
         dst = path.join(out_dir, '.'.join([filename, 'png']))
 
@@ -89,7 +90,7 @@ def save():
         else:
             raise ArgumentError(f'{args[2]} is not an acceptable argument')
 
-    elif '/' in args[0][-1]:
+    elif ('/' in args[0][-1]) or ('\\' in args[0][-1]):
         directory = args[0]
 
         save_directory(directory, out_dir)
