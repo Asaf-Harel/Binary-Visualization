@@ -20,8 +20,13 @@ class DirectoryNotFoundError(Exception):
 
 def save_file(file_path, out_dir):
     if path.isfile(file_path):
-        file_path = file_path.replace('\\', '/')
-        filename = file_path.split('/')[-1].split('.')[0]
+        if '/' in file_path:
+            filename = file_path.split('/')[-1].split('.')[0]
+        elif '\\' in file_path:
+            filename = file_path.split('\\')[-1].split('.')[0]
+        else:
+            filename = file_path.split('.')[0]
+
         dst = path.join(out_dir, '.'.join([filename, 'png']))
 
         with open(file_path, 'rb') as file:
