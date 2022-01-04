@@ -1,5 +1,5 @@
 from . import utils
-
+import numpy as np
 
 def transform(entry, direction, width, x):
     assert x < 2 ** width
@@ -85,7 +85,7 @@ class Hilbert:
         """
             Size is the total number of points in the curve.
         """
-        x = np.log(size, 2)
+        x = np.math.log(size, 2)
         if not float(x) / dimension == int(x) / dimension:
             raise ValueError("Size does not fit Hilbert curve of dimension %s." % dimension)
         return Hilbert(dimension, int(x / dimension))
