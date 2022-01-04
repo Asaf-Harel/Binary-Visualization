@@ -1,5 +1,4 @@
 from . import utils
-import math
 
 
 def transform(entry, direction, width, x):
@@ -86,7 +85,7 @@ class Hilbert:
         """
             Size is the total number of points in the curve.
         """
-        x = math.log(size, 2)
+        x = np.log(size, 2)
         if not float(x) / dimension == int(x) / dimension:
             raise ValueError("Size does not fit Hilbert curve of dimension %s." % dimension)
         return Hilbert(dimension, int(x / dimension))
@@ -103,7 +102,7 @@ class Hilbert:
         """
             Size of this curve in each dimension.
         """
-        return [int(math.ceil(len(self) ** (1 / float(self.dimension))))] * self.dimension
+        return [int(np.ceil(len(self) ** (1 / float(self.dimension))))] * self.dimension
 
     def index(self, p):
         return hilbert_index(self.dimension, self.order, p)

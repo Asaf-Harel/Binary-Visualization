@@ -69,10 +69,12 @@ def save_directory_recursive(directory, out_dir):
         file_path = path.join(directory, file_path)
         save_file(file_path, out_dir)
     for dir_path in dirs_paths:
+        parent_out_dir = out_dir
         out_dir = path.join(out_dir, dir_path)
         os.mkdir(out_dir)
         dir_path = path.join(directory, dir_path)
         save_directory_recursive(dir_path, out_dir)
+        out_dir = parent_out_dir
 
 
 def save():

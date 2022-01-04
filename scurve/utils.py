@@ -2,7 +2,7 @@
     A lot of these functions are written for clarity rather than speed. We'll
     fix that in time.
 """
-import math
+import numpy as np
 
 
 def graycode(x):
@@ -16,7 +16,7 @@ def igraycode(x):
     """
     if x == 0:
         return x
-    m = int(math.ceil(math.log(x, 2))) + 1
+    m = int(np.ceil(np.log(x, 2))) + 1
     i, j = x, 1
     while j < m:
         i = i ^ (x >> j)
