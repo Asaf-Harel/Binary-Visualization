@@ -9,9 +9,9 @@ class ColorClass:
         self.symbol_map = {v: i for (i, v) in enumerate(s)}
 
     def point(self, x):
-        return self.getPoint(x)
+        return self.get_point(x)
 
-    def getPoint(self, x):
+    def get_point(self, x):
         c = self.data[x]
         if c == 0:
             return [0, 0, 0]

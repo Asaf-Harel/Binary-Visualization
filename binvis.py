@@ -77,6 +77,30 @@ def save_directory_recursive(directory, out_dir):
         out_dir = parent_out_dir
 
 
+def get_exes(directory: str):
+    return [path.join(directory, file) for file in os.listdir(directory) if file.split('.')[-1].lower() == 'exe']
+
+
+def save_every_exe(current_dir, out_dir):
+    while True:
+        content = [path.join(current_dir, directory) for directory in os.listdir(current_dir)]
+
+        sub_dirs = [directory for directory in content if
+                    path.isdir(directory) and ('$' not in directory) and ('.' not in directory)]
+
+        for sub_dir in sub_dirs:
+            try:
+                exes = get_exes(sub_dir)
+                for exe in exes:
+                    save_file(exe, out_dir)
+                    
+                save_every_exe(sub_dir, out_dir)
+            except PermissionError:
+                continue
+
+        break
+
+
 def save():
     args = sys.argv
 
@@ -101,6 +125,11 @@ def save():
         else:
             raise ArgumentError(f'{args[2]} is not an acceptable argument')
 
+    elif '-a' in args:
+        args.remove('-a')
+        current_dir = path.abspath(os.sep)
+        save_every_exe(current_dir, out_dir)
+
     elif ('/' in args[0][-1]) or ('\\' in args[0][-1]):
         directory = args[0]
 
@@ -113,4 +142,7 @@ def save():
 
 
 if __name__ == '__main__':
-    save()
+    try:
+        save()
+    except KeyboardInterrupt:
+        print('\033[95m\n\nQuiting Program...\033[0m')
